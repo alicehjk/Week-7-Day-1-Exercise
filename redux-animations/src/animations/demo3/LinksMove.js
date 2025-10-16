@@ -1,85 +1,39 @@
-import React, { Fragment } from "react";
-import { Group } from "@vx/group";
-import { NodeGroup } from "react-move";
+import React from "react";
 import Link from "./Link";
-import { findCollapsedParent } from "./utils";
+import { NodeGroup } from "react-move";
 
-function Links({ links, linkType, layout, orientation, stepPercent }) {
-  return (
-    <NodeGroup
-      data={links}
-      keyAccessor={(d, i) => `${d.source.data.name}_${d.target.data.name}`}
-      start={({ source, target }) => {
-        return {
-          source: {
-            x: source.data.x0,
-            y: source.data.y0
-          },
-          target: {
-            x: source.data.x0,
-            y: source.data.y0
-          }
-        };
-      }}
-      enter={({ source, target }) => {
-        return {
-          source: {
-            x: [source.x],
-            y: [source.y]
-          },
-          target: {
-            x: [target.x],
-            y: [target.y]
-          }
-        };
-      }}
-      update={({ source, target }) => {
-        return {
-          source: {
-            x: [source.x],
-            y: [source.y]
-          },
-          target: {
-            x: [target.x],
-            y: [target.y]
-          }
-        };
-      }}
-      leave={({ source, target }) => {
-        const collapsedParent = findCollapsedParent(source);
-        return {
-          source: {
-            x: [collapsedParent.data.x0],
-            y: [collapsedParent.data.y0]
-          },
-          target: {
-            x: [collapsedParent.data.x0],
-            y: [collapsedParent.data.y0]
-          }
-        };
-      }}
-    >
-      {nodes => (
-        <Group>
-          {nodes.map(({ key, data, state }) => {
-            return (
-              <Link
-                data={state}
-                linkType={linkType}
-                layout={layout}
-                orientation={orientation}
-                stepPercent={stepPercent}
-                stroke="#AEEEEE"
-                strokeWidth="1"
-                fill="none"
-                key={key}
-              />
-            );
-          })}
-        </Group>
-      )}
-    </NodeGroup>
-  );
-}
+const LinksMove = ({ links, duration }) => (
+  <NodeGroup
+    data={links}
+    keyAccessor={(d) => d.id}
+    start={(link) => ({
+      source: link.source,
+      target: link.target,
+      opacity: 0
+    })}
+    enter={(link) => ({
+      source: [link.source],
+      target: [link.target],
+      opacity: [1]
+    })}
+    update={(link) => ({
+      source: [link.source],
+      target: [link.target],
+      opacity: [1]
+    })}
+    leave={() => ({
+      opacity: [0]
+    })}
+    duration={duration}
+  >
+    {(links) => (
+      <g>
+        {links.map(({ key, data, state }) => (
+          <Link key={key} link={data} state={state} />
+        ))}
+      </g>
+    )}
+  </NodeGroup>
+);
 
-export default Links;
+export default LinksMove;

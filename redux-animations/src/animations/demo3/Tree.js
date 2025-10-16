@@ -1,127 +1,33 @@
-import React, { Fragment, Component } from "react";
+import React, { useState, useEffect } from "react";
+import { hierarchy, tree } from "d3-hierarchy";
 import { Group } from "@vx/group";
-import { Tree } from "@vx/hierarchy";
-import { LinearGradient } from "@vx/gradient";
-import { hierarchy } from "d3-hierarchy";
-import Links from "./LinksMove";
-import Nodes from "./NodesMove";
+import NodesMove from "./NodesMove";
 
-export default class App extends Component {
-  state = {
-    layout: "cartesian",
-    orientation: "horizontal",
-    linkType: "diagonal",
-    stepPercent: 0.5
-  };
+const Tree = ({ data, width, height }) => {
+  const [layout, setLayout] = useState({ nodes: [], links: [] });
 
-  render() {
-    const {
-      data,
-      width,
-      height,
-      events = false,
-      margin = {
-        top: 30,
-        left: 30,
-        right: 30,
-        bottom: 30
-      }
-    } = this.props;
-    const { layout, orientation, linkType, stepPercent } = this.state;
+  useEffect(() => {
+    if (!data) return;
+    const root = hierarchy(data);
+    const layoutTree = tree().size([width, height]);
+    layoutTree(root);
 
-    if (width < 10) return null;
+    const nodes = root.descendants();
+    const links = root.links();
+    setLayout({ nodes, links });
+  }, [data, width, height]);
 
-    const innerWidth = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
+  // changed == → ===
+  const nodes = layout.nodes || [];
+  const links = layout.links || [];
 
-    let origin;
-    let sizeWidth;
-    let sizeHeight;
+  return (
+    <svg width={width} height={height}>
+      <Group top={20} left={20}>
+        <NodesMove nodes={nodes} links={links} duration={600} />
+      </Group>
+    </svg>
+  );
+};
 
-    if (layout === "polar") {
-      origin = {
-        x: innerWidth / 2,
-        y: innerHeight / 2
-      };
-      sizeWidth = 2 * Math.PI;
-      sizeHeight = Math.min(innerWidth, innerHeight) / 2;
-    } else {
-      origin = { x: 0, y: 0 };
-      if (orientation === "vertical") {
-        sizeWidth = innerWidth;
-        sizeHeight = innerHeight;
-      } else {
-        sizeWidth = innerHeight;
-        sizeHeight = innerWidth;
-      }
-    }
-
-    const root = hierarchy(data, d => (d.isExpanded ? d.children : null));
-
-    return (
-      <Fragment>
-        <div style={{ margin: "10px 0px" }}>
-          <span style={{ marginRight: 10 }}>
-            <label>orientation:</label>
-            <select
-              onChange={e => this.setState({ orientation: e.target.value })}
-              value={orientation}
-              disabled={layout === "polar"}
-            >
-              <option value="vertical">vertical</option>
-              <option value="horizontal">horizontal</option>
-            </select>
-          </span>
-          <span>
-            <label>link:</label>
-            <select
-              onChange={e => this.setState({ linkType: e.target.value })}
-              value={linkType}
-            >
-              <option value="diagonal">diagonal</option>
-              <option value="step">step</option>
-              <option value="line">line</option>
-            </select>
-          </span>
-        </div>
-        <svg width={width} height={height}>
-          <LinearGradient id="lg" from="#fff" to="#aaa" />
-          <rect width={width} height={height} rx={14} fill="#888" />
-          <Tree
-            top={margin.top}
-            left={margin.left}
-            root={root}
-            size={[sizeWidth, sizeHeight]}
-            separation={(a, b) => (a.parent == b.parent ? 1 : 0.5) / a.depth}
-          >
-            {({ data }) => (
-              <Group top={origin.y} left={origin.x}>
-                <Links
-                  links={data.links()}
-                  linkType={linkType}
-                  layout={layout}
-                  orientation={orientation}
-                  stepPercent={stepPercent}
-                />
-
-                <Nodes
-                  nodes={data.descendants()}
-                  layout={layout}
-                  orientation={orientation}
-                  onNodeClick={node => {
-                    if (!node.data.isExpanded) {
-                      node.data.x0 = node.x;
-                      node.data.y0 = node.y;
-                    }
-                    node.data.isExpanded = !node.data.isExpanded;
-                    this.forceUpdate();
-                  }}
-                />
-              </Group>
-            )}
-          </Tree>
-        </svg>
-      </Fragment>
-    );
-  }
-}
+export default Tree;
