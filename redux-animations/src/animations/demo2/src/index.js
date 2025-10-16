@@ -8,17 +8,6 @@ const { Scene } = ReactVertex;
 const { OrbitCamera } = Orbit;
 
 const Demo2App = () => {
-  // verify these components exist
-  if (!Scene || !OrbitCamera) {
-    console.error("React Vertex components missing. Check library versions.");
-    return (
-      <div style={{ color: "white", background: "black", padding: 20 }}>
-        WebGL context not available — please reinstall @react-vertex/core and
-        @react-vertex/orbit-camera
-      </div>
-    );
-  }
-
   return (
     <div
       style={{
