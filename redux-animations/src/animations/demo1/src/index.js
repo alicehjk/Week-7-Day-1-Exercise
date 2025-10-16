@@ -1,6 +1,12 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import BarChart from "./BarChart";
+import "./barchart.css";
 
-const rootElement = document.getElementById("root");
-ReactDOM.render(<BarChart />, rootElement);
+const Demo1App = () => (
+  <div>
+    <h2>Demo 1 – Bar Chart</h2>
+    <BarChart />
+  </div>
+);
+
+export default Demo1App;

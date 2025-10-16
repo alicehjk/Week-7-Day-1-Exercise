@@ -1,10 +1,11 @@
 import React from "react";
-import { render } from "react-dom";
 import Tree from "./Tree";
-import data from "./data";
 
-const App = () => {
-  return <Tree data={data} width={600} height={500} />;
-};
+const Demo3App = () => (
+  <div>
+    <h2>Demo 3 – Tree Animation</h2>
+    <Tree />
+  </div>
+);
 
-render(<App />, document.getElementById("root"));
+export default Demo3App;
