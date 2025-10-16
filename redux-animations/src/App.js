@@ -1,9 +1,10 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Demo1App from "./animations/demo1/App";
-import Demo2App from "./animations/demo2/App";
-import Demo3App from "./animations/demo3/App";
+
+import Demo1App from "./animations/demo1/src/index";
+import Demo2App from "./animations/demo2/src/index";
+import Demo3App from "./animations/demo3/index";
 
 function App() {
   return (
@@ -22,4 +23,5 @@ function App() {
     </Router>
   );
 }
+
 export default App;
